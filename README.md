@@ -18,8 +18,8 @@ Data file's information:
 
 <h2> Mapping to ML problem: Performance Metrices </h2>
 <p>The problem here is a multi-class classification problem. Taking into consideration the problem type and the business constraints, we boil down to the following performance metrices:
-<ol><b>Multi-class log-loss</b>In case of probability scores, log-loss is one of the best performance metrices</ol>
-<ol><b>Confusion Matrix</b>Along with confusion matrix, we also use precision and recall matrix. These give us a better understanding
+<ol><b>Multi-class log-loss:</b> In case of probability scores, log-loss is one of the best performance metrices</ol>
+<ol><b>Confusion Matrix:</b> Along with confusion matrix, we also use precision and recall matrix. These give us a better understanding
                        of how our model is performing.</ol>
 </p>
 
