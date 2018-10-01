@@ -1,72 +1,68 @@
 # A Machine Learning case-study to classify genetic mutations based on evidence from clinical literature
 
-### Business Objective:
-  We have data for gentiec variation and mutation along with text based clinical literature. There are nine classes and we have to classify our data into one of these classes. This task we achieve on basis of the probabilites assigned to each of the class by our model. Since this is a critical problem, along with probabilites we also give the information that out of a given number of top features, how many of them are present in a test data point.
-  
-### Machine learning problem type:
-  Since we have nine classess, this is a multiclass classification problem.
+<h2> Business Objective: </h2>
+<p> Given a {gene, variation, text-based clinical literature}, classify the data into one of the 9 classes.
+ <br><b>Note: </b> There is no strict latency requirement but because of the critical nature of the problem, interpretability is very important. We need to specify the probability of a data point belonging to each class
 
-### Data Source:
-  https://www.kaggle.com/c/msk-redefining-cancer-treatment/data
+<h2> Data Collection: </h2>
+<p>
+We get our data from :  https://www.kaggle.com/c/msk-redefining-cancer-treatment/data
+</p>
 
-### Data Information:
-  We have two data files.
-  File 1 contents:
-    Training variants (Id,Gene,Varaition,Class)
-    Training text (Id,Clinical litreature text)
-    
-### Real-world/Business objectives and constraints:
-  * No low-latency requirement.
-  * Interpretability is important.
-  * Errors can be very costly.
-  * Probability of a data-point belonging to each class is needed.
+<h2> Mapping to ML problem: Data</h2>
+<p>We have two data files: one conatins the information about the genetic mutations and the other contains the clinical evidence (text) that human experts/pathologists use to classify the genetic mutations. Both these data files are have a common column called ID.<br>
+Data file's information:
+<ol>training_variants (ID , Gene, Variations, Class)</ol>
+<ol>training_text (ID, Text)</ol>
+</p>
 
+<h2> Mapping to ML problem: Performance Metrices </h2>
+<p>The problem here is a multi-class classification problem. Taking into consideration the problem type and the business constraints, we boil down to the following performance metrices:
+<ol><b>Multi-class log-loss</b>In case of probability scores, log-loss is one of the best performance metrices</ol>
+<ol><b>Confusion Matrix</b>Along with confusion matrix, we also use precision and recall matrix. These give us a better understanding
+                       of how our model is performing.</ol>
+</p>
 
-### Machine learning objectives and constraints:
-  * Penalize the errors : Log Loss
-  * Interpretability
-  * Class probabilities are needed
-  * No latency requirement
-  
-### Performance Metric:
-  * Log loss
-  * Confusion matrix : Along with confusion matrix, we also use precision and recall matrix. These give us a better understanding
-                       of how our model is working. 
-  
-### Approach to solve the problem:
-  We will use a number of models here to see which model has the best result. 
+<h2> Mapping to ML problem: Train-Test split </h2>
+<p>The data doesn't have a temporal nature. So, we split the dataset randomly into 3 parts - Train(64%), CV(16%), Test(20%)
+</p>
+
+<h2> EDA: Preprocessing of text data</h2>
+<p> We perform some basic pre-processing steps like removing NAN records, for each text record - replace every special character with space, convert all the characters into lower case and remove stop words. <br>
+  We also plot the distribution of class labels in train, cv and test datasets and found that the distributions are similar
+</p>
+
+<h2> EDA: Prediction using a Random Model</h2>
+<p> We simulate a random model where we generate the nine class probabilities such that they sum to 1. Now we compute the log-loss, basically to understand how bad our model can be. Any sensible model will have a log-loss less than random model's. We also build the confusion, precision and recall matrix to better understand how our random model is actually performing.<br>
+  The log-loss came out to be roughly ~2.5 for both cv and test datasets
+</p>
+
+<h2> EDA: Univariate Analysis</h2>
+<p> We performed univariate analysis for gene, variation and text feature and found them to be useful in one way or the other. Basically, we are not discarding any of the features.<br>
+ Both Gene and Variation are categorical random variables. We featurize them using both OneHotEncoding and ResponseCoding. We choose the appropriate featurization based on the ML models we use. For converting text to vector, we can use CountVectorizer or Tf-Idf Vectorizer.
+</p>
+
+<h2> Data Preparation:</h2>
+<p> We stack the three vectorized features and build our models on them(basically perform multivariate analysis). We will use the both the one-hot encoded and response coded features. Some models perform better with OHE and some with response coded
+</p>
+
+<h2> Modeling:Baseline Model - NaiveBayes</h2>
+<p> Naive Bayes works very well on text data(high-dim data), so it often acts as a good baseline model. We use MultinomialNB in this case and a CalibratedClassifier on top of it. The log-loss on test came out around ~1.21. WE already have each class's probabilities for a data point and thus we can easily get FI for our NB model
+</p>
+
+<h2> Modeling:Other Models Applied</h2>
+<p> We try out a few other models and some ensembles to see which model gives us the best result.<br> 
   Models Used:
-  * Naive Bayes
-  * KNN
-  * Logistic Regression with class balancing
-  * Logistic Regression without class balancing
-  * Random Forest
-  * Linear SVM
-  * Stacking classifier (Ensemble model)
-  * Majority voting (Ensemble model)
- 
-### Data Preprocessing:
-  * Remove all the stop words
-  * Convert the text to lower case
-  * Replace multiple spaces with a single space
-  
-### Data Featurization:
-  We use two approaches for featurizing data:
-  * Response coding: Better for Random forest
-  * One hot encoding: Better for Logistic Regression
-  * After vectorization, we stack all the three features to get the complete feature set for each data point.
-  
-### Train, test, cv split:
-  * We split our whole data into training set, test set, cross validation set.
-  * As it is a multiclass problem, we check that the distribution of classess is consistent through the train, test and cv set.
-  
-### Exploratory Data Analysis:
-  We tried building a model on each of the individual features to ascertain wheter the feature is stable or not.
-  If the test and cv error and not very much different from train error, we conculded that the feature is stable.
+  <ol>Naive Bayes</ol>
+  <ol>KNN</ol>
+  <ol>Logistic Regression with class balancing</ol>
+  <ol>Logistic Regression without class balancing</ol>
+  <ol>Random Forest</ol>
+  <ol>Linear SVM</ol>
+  <ol>Stacking classifier (Ensemble model)</ol>
+  <ol>Majority Voting classifier (Ensemble model)</ol>
+</p>
 
-### Applying The Models:
-  Once we have done the EDA and concluded that we will use all the features, we will now apply our ML models.
-  We use Naive Bayes as our base line model, as it works well on text data.
-  #### Steps:
-  * Perform hyper parameter tunning to get the best values for the hyper parameters for each model
-  * Use that hyper parameter to train the model and predict the results
+<h2> Conclusion</h2>
+<p> Logistic Regression(with class-balancing) was our best model and performing some neat tricks with the features, we were able to obtain a log-loss less than 1
+</p>
